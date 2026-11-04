@@ -13,8 +13,9 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
 import { FloatingAddButton } from '../components/FloatingAddButton';
+import { MobileSearchSheet } from '../components/MobileSearchSheet';
 import { ProgressBar } from '../components/ProgressBar';
-import { SearchField } from '../components/SearchField';
+import { SearchDropdown } from '../components/SearchDropdown';
 import { StatCard } from '../components/StatCard';
 import { TaskListSkeleton } from '../components/TaskListSkeleton';
 import { TaskRow } from '../components/TaskRow';
@@ -86,14 +87,36 @@ export function Home() {
         </div>
 
         <div className="w-[320px] shrink-0">
-          <SearchField value={query} onChange={setQuery} />
+          <SearchDropdown
+            query={query}
+            onChange={setQuery}
+            tasks={tasks}
+            onToggle={(task) => void toggleTask(task)}
+            onEdit={openEditTask}
+            onDelete={(task) => void deleteTask(task)}
+            onGoToDate={(day) => {
+              setSelectedDay(day);
+              setQuery('');
+            }}
+          />
         </div>
       </header>
 
       <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-6 lg:space-y-0">
         <div className="space-y-5 lg:space-y-6">
+          {/* Mobile: full-screen search sheet that searches ALL tasks */}
           <div className="lg:hidden">
-            <SearchField value={query} onChange={setQuery} />
+            <MobileSearchSheet
+              tasks={tasks}
+              onToggle={(task) => void toggleTask(task)}
+              onEdit={openEditTask}
+              onDelete={(task) => void deleteTask(task)}
+              onGoToDate={(day) => {
+                setSelectedDay(day);
+                // If that day is in a different week, expand it
+                setExpandedWeek(null);
+              }}
+            />
           </div>
 
           <WeekStrip

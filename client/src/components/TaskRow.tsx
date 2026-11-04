@@ -3,6 +3,7 @@ import { Check, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '../lib/cn';
 import { formatShortDate, formatTimeRange } from '../lib/date';
 import type { Task } from '../types';
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
 const ACTION_WIDTH = 88; // width of the revealed "Delete" action, in px
 const SWIPE_THRESHOLD = ACTION_WIDTH / 2;
@@ -33,6 +34,7 @@ export function TaskRow({
   showDate = false,
 }: TaskRowProps) {
   const [offset, setOffset] = useState(0);
+  const [pendingDelete, setPendingDelete] = useState(false);
   const drag = useRef<{
     startX: number;
     startY: number;
@@ -100,7 +102,7 @@ export function TaskRow({
         <button
           type="button"
           data-no-swipe
-          onClick={() => onDelete(task)}
+          onClick={() => setPendingDelete(true)}
           aria-label={`Delete ${task.title}`}
           className="flex w-full flex-col items-center justify-center gap-1 bg-danger text-[10px] font-semibold text-white transition hover:bg-[#DB4A3C]"
         >
@@ -173,7 +175,7 @@ export function TaskRow({
         <button
           type="button"
           data-no-swipe
-          onClick={() => onDelete(task)}
+          onClick={() => setPendingDelete(true)}
           aria-label={`Delete ${task.title}`}
           className="icon-button h-8 w-8 shrink-0 hover:text-danger"
         >
@@ -189,6 +191,14 @@ export function TaskRow({
           <Pencil size={15} />
         </button>
       </div>
+
+      {pendingDelete && (
+        <ConfirmDeleteDialog
+          taskTitle={task.title}
+          onConfirm={() => { setPendingDelete(false); setOffset(0); onDelete(task); }}
+          onCancel={() => { setPendingDelete(false); setOffset(0); }}
+        />
+      )}
     </li>
   );
 }

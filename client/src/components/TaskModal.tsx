@@ -6,6 +6,7 @@ import { dateKey } from '../lib/date';
 import type { Priority, Task, TaskInput } from '../types';
 import { useTasks } from '../context/TasksContext';
 import { useToast } from '../context/ToastContext';
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
 interface TaskModalProps {
   mode: 'create' | 'edit';
@@ -61,6 +62,7 @@ export function TaskModal({ mode, task, initialDate, onClose }: TaskModalProps) 
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
   // Lock the page behind the sheet and close on Escape.
@@ -128,9 +130,7 @@ export function TaskModal({ mode, task, initialDate, onClose }: TaskModalProps) 
     await deleteTask(task);
     setSaving(false);
     onClose();
-  };
-
-  return (
+  };  return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
       <div
         className="absolute inset-0 animate-fade-in bg-ink/40 backdrop-blur-[2px]"
@@ -286,7 +286,7 @@ export function TaskModal({ mode, task, initialDate, onClose }: TaskModalProps) 
           {mode === 'edit' && task && (
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setPendingDelete(true)}
               disabled={saving}
               className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl text-[13px] font-semibold text-danger transition hover:bg-danger/5 disabled:opacity-60"
             >
@@ -296,6 +296,14 @@ export function TaskModal({ mode, task, initialDate, onClose }: TaskModalProps) 
           )}
         </form>
       </div>
+
+      {pendingDelete && task && (
+        <ConfirmDeleteDialog
+          taskTitle={task.title}
+          onConfirm={() => { setPendingDelete(false); void handleDelete(); }}
+          onCancel={() => setPendingDelete(false)}
+        />
+      )}
     </div>
   );
 }
