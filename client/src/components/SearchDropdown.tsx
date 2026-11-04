@@ -209,7 +209,7 @@ function DropdownResultRow({
         {/* Title + meta — clicking jumps to that date */}
         <button
           type="button"
-          onClick={onGoToDate}
+          onClick={onEdit}
           className="min-w-0 flex-1 text-left"
         >
           <p
