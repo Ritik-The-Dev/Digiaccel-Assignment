@@ -1,14 +1,25 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import taskRoutes from './routes/task.routes.js';
 import { errorHandler, notFound } from './middleware/error.js';
+import { connectDatabase } from './config/db.js';
+import { seedIfEmpty } from './seed.js';
 
+// ── Lazy DB init (used by Vercel serverless entry) ───────────────────────────
+let _dbReady = false;
+async function ensureDb() {
+  if (!_dbReady) {
+    await connectDatabase();
+    if (process.env.SEED_DEMO !== 'false') await seedIfEmpty();
+    _dbReady = true;
+  }
+}
 
-export function createApp() {
+export function createApp({ lazyDb = false } = {}) {
   const app = express();
 
-  
   const allowedOrigins = (process.env.CORS_ORIGIN || '')
     .split(',')
     .map((origin) => origin.trim())
@@ -27,6 +38,13 @@ export function createApp() {
     app.use(morgan('dev'));
   }
 
+  // When running on Vercel, connect to DB on the first request of each cold start.
+  if (lazyDb) {
+    app.use((_req, _res, next) => {
+      ensureDb().then(() => next()).catch(next);
+    });
+  }
+
   app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', uptime: Math.round(process.uptime()) });
   });
@@ -38,3 +56,6 @@ export function createApp() {
 
   return app;
 }
+
+// ── Vercel entry point ───────────────────────────────────────────────────────
+export default createApp({ lazyDb: true });
