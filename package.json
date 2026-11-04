@@ -1,0 +1,25 @@
+{
+  "name": "taskly",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Taskly — a MERN to-do list app with weekly planning, built from the Figma mobile design.",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --workspace server run dev",
+    "dev:client": "npm --workspace client run dev",
+    "build": "npm --workspace client run build",
+    "start": "npm --workspace server run start",
+    "seed": "npm --workspace server run seed",
+    "typecheck": "npm --workspace client run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}

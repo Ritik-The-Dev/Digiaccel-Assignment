@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Keep the mobile layout clear of notches / home indicators. */
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  /* Native date/time pickers: hide the extra icon, we render our own. */
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='time']::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  input[type='date'],
+  input[type='time'] {
+    position: relative;
+  }
+
+  ::selection {
+    @apply bg-brand/20;
+  }
+}
+
+@layer components {
+  .field {
+    @apply h-12 w-full rounded-xl border border-line bg-white px-3.5 text-[15px] text-ink
+      outline-none transition placeholder:text-muted/80
+      focus:border-brand focus:ring-4 focus:ring-brand/10;
+  }
+
+  .field-error {
+    @apply border-danger/60 focus:border-danger focus:ring-danger/10;
+  }
+
+  .label {
+    @apply mb-2 block text-[13px] font-medium text-ink/70;
+  }
+
+  .icon-button {
+    @apply grid h-9 w-9 place-items-center rounded-lg text-muted transition
+      hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-2
+      focus-visible:ring-brand/40;
+  }
+}

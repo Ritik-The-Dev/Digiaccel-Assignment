@@ -1,0 +1,21 @@
+# Optional one-click blueprint for the Express API.
+services:
+  - type: web
+    name: taskly-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      # Paste a MongoDB Atlas connection string in the Render dashboard.
+      - key: MONGODB_URI
+        sync: false
+      # The deployed frontend origin, e.g. https://taskly.netlify.app
+      - key: CORS_ORIGIN
+        sync: false
+      - key: SEED_DEMO
+        value: "true"
+      - key: NODE_ENV
+        value: production
